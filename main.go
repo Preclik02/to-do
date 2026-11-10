@@ -46,10 +46,12 @@ func main() {
 
 	// -- Buttons -- //
 	btn_add := widget.NewButton("Add", func() {
-		fmt.Println("[+] Add --> "+input.Text)
-		tasks_slice = append(tasks_slice, input.Text)
-		input.SetText("")
-		tasks.Refresh()
+		if input.Text != "" {
+			fmt.Println("[+] Add --> "+input.Text)
+			tasks_slice = append(tasks_slice, input.Text)
+			input.SetText("")
+			tasks.Refresh()
+		}
 	})
 	btn_remove := widget.NewButton("Remove", func() {
 		fmt.Println("[+] Remove --> "+input.Text)
@@ -65,20 +67,21 @@ func main() {
 		tasks.Refresh()
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
-		fmt.Println("Mark"+input.Text)
+		fmt.Println("Mark "+input.Text)
 	})
 	btn_row := container.NewGridWithColumns(2, btn_add, btn_remove)
 	// ^^ Buttons ^^ //
 
-
-	interactive_ui := container.NewVBox(
-	container.NewVBox(label, input, btn_row, btn_mark),
-	widget.NewSeparator(),
-	tasks,
+	interactive_ui := container.NewBorder(
+		container.NewVBox(label, input, btn_row, btn_mark, widget.NewSeparator(),),
+		nil,
+		nil,
+		nil,
+		tasks,
 	)
 
 	Window.SetContent(interactive_ui)
-
+	Window.Resize(fyne.NewSize(400, 600))
 	Window.ShowAndRun()
 
 }
