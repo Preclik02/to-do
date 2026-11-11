@@ -68,6 +68,7 @@ func main() {
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
 		fmt.Println("Mark "+input.Text)
+		input.SetText("")
 	})
 	btn_row := container.NewGridWithColumns(2, btn_add, btn_remove)
 	// ^^ Buttons ^^ //
