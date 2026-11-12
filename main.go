@@ -14,8 +14,9 @@ import (
 func main() {
 
 	// -- intilize app -- //
-	app := app.New()
+	app := app.NewWithID("jaylub.com")
 	Window := app.NewWindow("To-Do Application") // --> title // 
+	prefs := app.Preferences()
 
 	// -- Text -- //
 	label := widget.NewLabel("To-Do List")
@@ -35,7 +36,14 @@ func main() {
 		},
 
 	)
-
+	// ^^ NewList logic ^^ //
+	var selected_task = prefs.StringWithFallback("task", "none")
+	tasks.OnSelected = func(id widget.ListItemID) {
+		selected_task = tasks_slice[id]
+		prefs.SetString("task", selected_task)
+		fmt.Println("selected task --> "+selected_task)
+	}
+	// ^^ on selected ^^ //
 	// ^^ Tasks ^^ //
 
 	// -- Entry -- //
@@ -54,11 +62,11 @@ func main() {
 		}
 	})
 	btn_remove := widget.NewButton("Remove", func() {
-		fmt.Println("[+] Remove --> "+input.Text)
+		fmt.Println("[+] Remove --> "+selected_task)
 			
 		j := 0
 		for _, i := range tasks_slice {
-			if i == input.Text {
+			if i == selected_task {
 				tasks_slice = slices.Delete(tasks_slice, j, j+1)
 			}
 			j++
@@ -67,8 +75,7 @@ func main() {
 		tasks.Refresh()
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
-		fmt.Println("Mark "+input.Text)
-		input.SetText("")
+		fmt.Println("Mark "+selected_task)
 	})
 	btn_row := container.NewGridWithColumns(2, btn_add, btn_remove)
 	// ^^ Buttons ^^ //
