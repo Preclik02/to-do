@@ -8,8 +8,25 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/container"
 	"slices"
-	
+	"os"
+	"io"
+	"strings"
+
 )
+
+func read_tasks() []string {
+
+	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Println("[+] Error while opening the file")
+	}
+	file.Seek(0, io.SeekStart)
+	var file_string string
+	fmt.Fscan(file, &file_string)
+	tasks_slice := strings.Split(file_string, ";")
+	return tasks_slice
+
+}
 
 func main() {
 
@@ -58,6 +75,7 @@ func main() {
 			fmt.Println("[+] Add --> "+input.Text)
 			tasks_slice = append(tasks_slice, input.Text)
 			input.SetText("")
+			prefs.SetString("task", "")
 			tasks.Refresh()
 		}
 	})
@@ -71,7 +89,7 @@ func main() {
 			}
 			j++
 		}
-		input.SetText("")
+		prefs.SetString("task", "")
 		tasks.Refresh()
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
@@ -89,7 +107,6 @@ func main() {
 	)
 
 	Window.SetContent(interactive_ui)
-	Window.Resize(fyne.NewSize(400, 600))
 	Window.ShowAndRun()
 
 }
