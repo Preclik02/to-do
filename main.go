@@ -16,16 +16,27 @@ import (
 
 func read_tasks() []string {
 
+	// -- Opening file, checking err and closing it at the end -- //
 	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println("[+] Error while opening the file")
 	}
+	defer file.Close()
+
+	// -- Setting the cursor at the begining of the file and start reading -- //
 	file.Seek(0, io.SeekStart)
 	var file_string string
 	fmt.Fscan(file, &file_string)
-	tasks_slice := strings.Split(file_string, ";")
-	return tasks_slice
 
+	// -- Split the string into a slice separated words with ";" -- //
+	tasks_slice := strings.Split(file_string, ";")
+
+	// -- return slice since it will be called like `x := read_tasks()` -- //
+	return tasks_slice
+}
+
+func write_tasks() {
+	// -- function to write tasks into file -- //
 }
 
 func main() {
