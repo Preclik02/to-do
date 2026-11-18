@@ -35,8 +35,22 @@ func read_tasks() []string {
 	return tasks_slice
 }
 
-func write_tasks() {
-	// -- function to write tasks into file -- //
+func write_tasks(tasks_slice []string) {
+
+	file, err := os.OpenFile("task.md", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Println("[+] Error while opening the file")
+	}
+	defer file.Close()
+
+	for _, i := range tasks_slice {
+		fmt.Println(i)
+		fmt.Fprintf(file, "%s", i)
+	}
+	// -- got not time now finish this later on I swear -- //
+
+
+
 }
 
 func main() {
