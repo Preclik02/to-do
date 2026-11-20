@@ -17,9 +17,10 @@ import (
 func read_tasks() []string {
 
 	// -- Opening file, checking err and closing it at the end -- //
-	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("[+] Error while opening the file")
+		return nil
 	}
 	defer file.Close()
 
@@ -37,17 +38,17 @@ func read_tasks() []string {
 
 func write_tasks(tasks_slice []string) {
 
-	file, err := os.OpenFile("task.md", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println("[+] Error while opening the file")
 	}
 	defer file.Close()
 
 	for _, i := range tasks_slice {
-		fmt.Println(i)
-		fmt.Fprintf(file, "%s", i)
+		fmt.Fprintf(file, "%s;", i)
 	}
-	// -- got not time now finish this later on I swear -- //
+	
+	// -- make marking logic -- //
 
 
 
@@ -65,7 +66,7 @@ func main() {
 	// ^^ Text ^^ //
 
 	// -- Tasks -- //
-	var tasks_slice []string
+	var tasks_slice []string = read_tasks()
 	tasks := widget.NewList(
 		func() int {
 			return len(tasks_slice)
@@ -119,6 +120,8 @@ func main() {
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
 		fmt.Println("Mark "+selected_task)
+		// -- WRITE FUNCTION -- //
+		write_tasks(tasks_slice)
 	})
 	btn_row := container.NewGridWithColumns(2, btn_add, btn_remove)
 	// ^^ Buttons ^^ //
