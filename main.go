@@ -103,6 +103,8 @@ func main() {
 			input.SetText("")
 			prefs.SetString("task", "")
 			tasks.Refresh()
+			// -- WRITE FUNCTION -- //
+			write_tasks(tasks_slice)
 		}
 	})
 	btn_remove := widget.NewButton("Remove", func() {
@@ -117,6 +119,8 @@ func main() {
 		}
 		prefs.SetString("task", "")
 		tasks.Refresh()
+		// -- WRITE FUNCTION -- //
+		write_tasks(tasks_slice)
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
 		fmt.Println("Mark "+selected_task)
