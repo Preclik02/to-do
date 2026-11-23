@@ -1,12 +1,15 @@
 package main
 
+// -- IMPORT LIBRARIES -- //
 import (
 
-	"fmt"
+	// -- fyne -- //
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/container"
+	// -- general -- //
+	"fmt"
 	"slices"
 	"os"
 	"io"
@@ -14,6 +17,7 @@ import (
 
 )
 
+// -- FUNCTIONS -- //
 func read_tasks() []string {
 
 	// -- Opening file, checking err and closing it at the end -- //
@@ -53,7 +57,9 @@ func write_tasks(tasks_slice []string) {
 
 
 }
+// ^^ FUNCTIONS ^^ //
 
+// -- main function -- //
 func main() {
 
 	// -- intilize app -- //
