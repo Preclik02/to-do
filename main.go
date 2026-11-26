@@ -40,7 +40,7 @@ func read_tasks() []string {
 	return tasks_slice
 }
 
-func write_tasks(tasks_slice []string) {
+func write_tasks(tasks_slice []string, marks_slice []string) {
 
 	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
@@ -49,6 +49,9 @@ func write_tasks(tasks_slice []string) {
 	defer file.Close()
 
 	for _, i := range tasks_slice {
+		fmt.Fprintf(file, "%s;", i)
+	}
+	for _, i := range marks_slice {
 		fmt.Fprintf(file, "%s;", i)
 	}
 	
@@ -86,11 +89,12 @@ func main() {
 
 	)
 	// ^^ NewList logic ^^ //
-	var selected_task = prefs.StringWithFallback("task", "none")
+	var selected_task = prefs.StringWithFallback("task", "none", "mark", 0)
+	var marks_state []int
 	tasks.OnSelected = func(id widget.ListItemID) {
 		selected_task = tasks_slice[id]
-		prefs.SetString("task", selected_task)
-		fmt.Println("selected task --> "+selected_task)
+		prefs.SetString("task", selected_task, "mark", mark_state[id])
+		fmt.Println("selected task --> "+selected_task+"mark --> "+mark_state[id])
 	}
 	// ^^ on selected ^^ //
 	// ^^ Tasks ^^ //
@@ -106,11 +110,12 @@ func main() {
 		if input.Text != "" {
 			fmt.Println("[+] Add --> "+input.Text)
 			tasks_slice = append(tasks_slice, input.Text)
+			marks_state = append(marks_state, 0)
 			input.SetText("")
-			prefs.SetString("task", "")
+			prefs.SetString("task", "", "mark", 0)
 			tasks.Refresh()
 			// -- WRITE FUNCTION -- //
-			write_tasks(tasks_slice)
+			write_tasks(tasks_slice, marks_slice)
 		}
 	})
 	btn_remove := widget.NewButton("Remove", func() {
@@ -120,18 +125,21 @@ func main() {
 		for _, i := range tasks_slice {
 			if i == selected_task {
 				tasks_slice = slices.Delete(tasks_slice, j, j+1)
+				marks_state = slices.Delete(marks_state, j, j+1)
 			}
 			j++
 		}
-		prefs.SetString("task", "")
+		prefs.SetString("task", "", "mark", 0)
 		tasks.Refresh()
 		// -- WRITE FUNCTION -- //
-		write_tasks(tasks_slice)
+		write_tasks(tasks_slice, marks_slice)
 	})
 	btn_mark := widget.NewButton("Mark Task", func() {
 		fmt.Println("Mark "+selected_task)
+		// -- get the index of selected_task from tasks_slice and use it on marks_state and change it -- //
+		// -- it can be done with for loop -- //
 		// -- WRITE FUNCTION -- //
-		write_tasks(tasks_slice)
+		write_tasks(tasks_slice, marks_slice)
 	})
 	btn_row := container.NewGridWithColumns(2, btn_add, btn_remove)
 	// ^^ Buttons ^^ //
