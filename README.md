@@ -18,4 +18,3 @@ As I have never done a GUI repository or a bigger project than simple tkinter wi
 # Left to-do
 1. Marking system.
 2. Theme.
-3. Writing into the file.
