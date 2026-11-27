@@ -14,33 +14,41 @@ import (
 	"os"
 	"io"
 	"strings"
+	"strconv"
 
 )
 
 // -- FUNCTIONS -- //
-func read_tasks() []string {
+func read_tasks() ([]string, []int) {
 
 	// -- Opening file, checking err and closing it at the end -- //
 	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("[+] Error while opening the file")
-		return nil
 	}
 	defer file.Close()
 
 	// -- Setting the cursor at the begining of the file and start reading -- //
 	file.Seek(0, io.SeekStart)
 	var file_string string
-	fmt.Fscan(file, &file_string)
+	var marks_slice_string_read string
+	fmt.Fscanf(file, "%s\n%s", &file_string, &marks_slice_string_read)
+	// ^^ needs to read the 
 
 	// -- Split the string into a slice separated words with ";" -- //
 	tasks_slice := strings.Split(file_string, ";")
+	marks_slice_string := strings.Split(marks_slice_string_read, ";")
 
-	// -- return slice since it will be called like `x := read_tasks()` -- //
-	return tasks_slice
+	var marks_slice []int
+	for _, i := range marks_slice_string {
+		marks_slice = append(marks_slice, strconv.Atoi(i))
+	}
+
+	// -- return slice since it will be called like `x, y := read_tasks()` -- //
+	return tasks_slice, marks_slice
 }
 
-func write_tasks(tasks_slice []string, marks_slice []string) {
+func write_tasks(tasks_slice []string, marks_slice []int) {
 
 	file, err := os.OpenFile("tasks.md", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
@@ -75,7 +83,9 @@ func main() {
 	// ^^ Text ^^ //
 
 	// -- Tasks -- //
-	var tasks_slice []string = read_tasks()
+	var tasks_slice []string
+	var marks_slice []int
+	tasks_slice, marks_slice = read_tasks()
 	tasks := widget.NewList(
 		func() int {
 			return len(tasks_slice)
