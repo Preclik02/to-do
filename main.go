@@ -9,10 +9,11 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/container"
 	// -- general -- //
-	"fmt"
-	"slices"
 	"os"
 	"io"
+	"fmt"
+	"log"
+	"slices"
 	"strings"
 	"strconv"
 
@@ -38,10 +39,15 @@ func read_tasks() ([]string, []int) {
 	// -- Split the string into a slice separated words with ";" -- //
 	tasks_slice := strings.Split(file_string, ";")
 	marks_slice_string := strings.Split(marks_slice_string_read, ";")
-
 	var marks_slice []int
-	for _, i := range marks_slice_string {
-		marks_slice = append(marks_slice, strconv.Atoi(i))
+	if err == nil {
+		for _, i := range marks_slice_string {
+			mark_int, err := strconv.Atoi(i)
+			if err != nil {
+				log.Fatal(err)
+			}
+			marks_slice = append(marks_slice, mark_int)
+		}
 	}
 
 	// -- return slice since it will be called like `x, y := read_tasks()` -- //
@@ -94,17 +100,20 @@ func main() {
 			return widget.NewLabel("Template")
 		},
 		func(id widget.ListItemID, task fyne.CanvasObject) {
-			task.(*widget.Label).SetText(tasks_slice[id])
+			mark_string := strconv.Itoa(marks_slice[id])
+			task.(*widget.Label).SetText(tasks_slice[id]+" "+mark_string)
 		},
 
 	)
 	// ^^ NewList logic ^^ //
-	var selected_task = prefs.StringWithFallback("task", "none", "mark", 0)
+	var selected_task = prefs.StringWithFallback("task", "none")
+	var selected_mark int = 0
 	var marks_state []int
 	tasks.OnSelected = func(id widget.ListItemID) {
 		selected_task = tasks_slice[id]
-		prefs.SetString("task", selected_task, "mark", mark_state[id])
-		fmt.Println("selected task --> "+selected_task+"mark --> "+mark_state[id])
+		selected_mark = marks_slice[id]
+		prefs.SetString("task", selected_task)
+		fmt.Printf("selected task --> %s\nmark --> %d", selected_task, selected_mark)
 	}
 	// ^^ on selected ^^ //
 	// ^^ Tasks ^^ //
@@ -122,7 +131,7 @@ func main() {
 			tasks_slice = append(tasks_slice, input.Text)
 			marks_state = append(marks_state, 0)
 			input.SetText("")
-			prefs.SetString("task", "", "mark", 0)
+			prefs.SetString("task", "")
 			tasks.Refresh()
 			// -- WRITE FUNCTION -- //
 			write_tasks(tasks_slice, marks_slice)
@@ -139,7 +148,7 @@ func main() {
 			}
 			j++
 		}
-		prefs.SetString("task", "", "mark", 0)
+		prefs.SetString("task", "")
 		tasks.Refresh()
 		// -- WRITE FUNCTION -- //
 		write_tasks(tasks_slice, marks_slice)
